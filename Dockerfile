@@ -1,44 +1,33 @@
-FROM docker.io/golang:1.24-alpine3.21 AS build
+from golang:1.24-alpine as builder
+env KNOT_REPO_SCAN_PATH=/home/git/repositories
+env CGO_ENABLED=1
 
-ENV CGO_ENABLED=1
-ENV KNOT_REPO_SCAN_PATH=/home/git/repositories
-WORKDIR /usr/src/app
-COPY go.mod go.sum ./
+workdir /app
+run apk add git gcc musl-dev
+run git clone https://tangled.sh/@tangled.sh/core .
+run go build -o /usr/bin/knot -ldflags '-s -w -extldflags "-static"' ./cmd/knot
 
-RUN apk add --no-cache gcc musl-dev
-RUN go mod download
+from alpine:edge
+expose 5555
+expose 22
 
-COPY . .
-RUN go build -v \
-    -o /usr/local/bin/knot \
-    -ldflags='-s -w -extldflags "-static"' \
-    ./cmd/knot
+label org.opencontainers.image.title='knot'
+label org.opencontainers.image.description='data server for tangled'
+label org.opencontainers.image.source='https://tangled.sh/@tangled.sh/knot-docker'
+label org.opencontainers.image.url='https://tangled.sh'
+label org.opencontainers.image.vendor='tangled.sh'
+label org.opencontainers.image.licenses='MIT'
 
-FROM docker.io/alpine:3.21
+copy rootfs .
+run chmod -R 755 /etc/s6-overlay
+run apk add shadow s6-overlay execline openssl openssh git curl
+run useradd -s /bin/nologin -d /home/git git && openssl rand -hex 16 | passwd --stdin git
+run mkdir -p /home/git/repositories && chown -R git:git /home/git/repositories
+copy --from=builder /usr/bin/knot /usr/bin
+run mkdir /app && chown -R git:git /app
 
-LABEL org.opencontainers.image.title=Tangled
-LABEL org.opencontainers.image.description="Tangled is a decentralized and open code collaboration platform, built on atproto."
-LABEL org.opencontainers.image.vendor=Tangled.sh
-LABEL org.opencontainers.image.licenses=MIT
-LABEL org.opencontainers.image.url=https://tangled.sh
-LABEL org.opencontainers.image.source=https://tangled.sh/@tangled.sh/core
+healthcheck --interval=60s --timeout=30s --start-period=5s --retries=3 \
+  cmd curl -f http://localhost:5555 || exit 1
 
-RUN apk add --no-cache shadow s6-overlay execline openssh git curl && \
-    adduser --disabled-password git && \
-    # We need to set password anyway since otherwise ssh won't work
-    head -c 32 /dev/random | base64 | tr -dc 'a-zA-Z0-9' | passwd git --stdin && \
-    mkdir /app && mkdir /home/git/repositories
+entrypoint ["/init"]
 
-COPY --from=build /usr/local/bin/knot /usr/local/bin
-COPY docker/rootfs/ .
-RUN chmod +x /etc/s6-overlay/scripts/keys-wrapper && \
-    chown git:git /app && \
-    chown -R git:git /home/git/repositories
-
-EXPOSE 22
-EXPOSE 5555
-
-HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
-    CMD curl -f http://localhost:5555/ || exit 1
-
-ENTRYPOINT ["/init"]
