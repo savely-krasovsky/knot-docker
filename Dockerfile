@@ -2,9 +2,11 @@ from golang:1.24-alpine as builder
 env KNOT_REPO_SCAN_PATH=/home/git/repositories
 env CGO_ENABLED=1
 
+arg TAG='v1.4.0-alpha'
+
 workdir /app
 run apk add git gcc musl-dev
-run git clone https://tangled.sh/@tangled.sh/core .
+run git clone -b ${TAG} https://tangled.sh/@tangled.sh/core .
 run go build -o /usr/bin/knot -ldflags '-s -w -extldflags "-static"' ./cmd/knot
 
 from alpine:edge
