@@ -6,6 +6,17 @@
 Docker container and compose setup to run a [Tangled](https://tangled.sh) knot
 and host your own repository data.
 
+## Pre-built Images
+
+There is a [repository](https://hub.docker.com/r/hqnna/knot) of pre-built images
+for tags starting at `v1.4.0-alpha` if you prefer.
+
+```
+docker pull hqnna/knot:v1.4.0-alpha
+```
+
+Note that these are *not* official images, you use them at your own risk.
+
 ## Building The Image
 
 By default the `Dockerfile` will build the latest tag, but you can change it
