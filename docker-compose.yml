@@ -8,12 +8,15 @@ services:
       KNOT_SERVER_SECRET: ${KNOT_SERVER_SECRET}
       KNOT_SERVER_DB_PATH: "/app/knotserver.db"
       KNOT_REPO_SCAN_PATH: "/home/git/repositories"
+      KNOT_SERVER_INTERNAL_LISTEN_ADDR: "localhost:5444"
     volumes:
       - "./keys:/etc/ssh/keys"
       - "./repositories:/home/git/repositories"
       - "./server:/app"
     ports:
+      - "5555:5555"
       - "2222:22"
+    restart: always
   frontend:
     image: caddy:2-alpine
     command: >
@@ -24,10 +27,9 @@ services:
     depends_on:
       - knot
     ports:
-      - "443:443"
-      - "443:443/udp"
+      - "${KNOT_SERVER_PORT:-443}:443"
+      - "${KNOT_SERVER_PORT:-443}:443/udp"
     volumes:
       - caddy_data:/data
     restart: always
-volumes:
-  caddy_data:
+    profiles: ["caddy"]

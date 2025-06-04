@@ -1,6 +1,7 @@
 FROM docker.io/golang:1.24-alpine3.21 AS build
 
 ENV CGO_ENABLED=1
+ENV KNOT_REPO_SCAN_PATH=/home/git/repositories
 WORKDIR /usr/src/app
 COPY go.mod go.sum ./
 
@@ -22,7 +23,7 @@ LABEL org.opencontainers.image.licenses=MIT
 LABEL org.opencontainers.image.url=https://tangled.sh
 LABEL org.opencontainers.image.source=https://tangled.sh/@tangled.sh/core
 
-RUN apk add --no-cache shadow s6-overlay execline openssh git && \
+RUN apk add --no-cache shadow s6-overlay execline openssh git curl && \
     adduser --disabled-password git && \
     # We need to set password anyway since otherwise ssh won't work
     head -c 32 /dev/random | base64 | tr -dc 'a-zA-Z0-9' | passwd git --stdin && \
@@ -30,8 +31,14 @@ RUN apk add --no-cache shadow s6-overlay execline openssh git && \
 
 COPY --from=build /usr/local/bin/knot /usr/local/bin
 COPY docker/rootfs/ .
+RUN chmod +x /etc/s6-overlay/scripts/keys-wrapper && \
+    chown git:git /app && \
+    chown -R git:git /home/git/repositories
 
 EXPOSE 22
 EXPOSE 5555
 
-ENTRYPOINT ["/bin/sh", "-c", "chown git:git /app && chown git:git /home/git/repositories && /init"]
+HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
+    CMD curl -f http://localhost:5555/ || exit 1
+
+ENTRYPOINT ["/init"]
