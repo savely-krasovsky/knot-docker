@@ -18,7 +18,7 @@ docker build -t knot:latest --build-arg TAG=master .
 The command above for example will build the latest commit on the `master`
 branch.
 
----
+<hr style="margin-bottom: 20px; margin-top: 10px" />
 
 This can be done in a compose file as well by specifying it as an build
 argument.
