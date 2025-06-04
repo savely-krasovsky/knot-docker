@@ -20,8 +20,8 @@ branch.
 
 <hr style="margin-bottom: 20px; margin-top: 10px" />
 
-This can be done in a compose file as well by specifying it as an build
-argument.
+When using compose, it can be specified as a build argument which will be
+passed to the builder.
 
 ```yaml
 build:
@@ -29,7 +29,8 @@ build:
   args: { TAG: master }
 ```
 
-Will tell docker to pass the `TAG` argument to the `Dockerfile` when building.
+This will for example tell docker to build it using the `master` branch like
+the command.
 
 ## Setting Up The Image
 
