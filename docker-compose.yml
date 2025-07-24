@@ -12,8 +12,8 @@ services:
       - ./repositories:/home/git/repositories
       - ./server:/app
     ports:
-      - 5555:5555
-      - 2222:22
+      - "5555:5555"
+      - "2222:22"
     restart: always
   frontend:
     image: caddy:alpine
