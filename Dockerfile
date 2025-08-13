@@ -21,6 +21,7 @@ label org.opencontainers.image.vendor='tangled.sh'
 label org.opencontainers.image.licenses='MIT'
 
 copy rootfs .
+run chmod 755 /etc
 run chmod -R 755 /etc/s6-overlay
 run apk add shadow s6-overlay execline openssl openssh git curl bash
 run useradd -d /home/git git && openssl rand -hex 16 | passwd --stdin git
