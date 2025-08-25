@@ -2,7 +2,7 @@ from golang:1.24-alpine as builder
 env KNOT_REPO_SCAN_PATH=/home/git/repositories
 env CGO_ENABLED=1
 
-arg TAG='v1.6.0-alpha'
+arg TAG='v1.8.0-alpha'
 
 workdir /app
 run apk add git gcc musl-dev
@@ -30,7 +30,6 @@ copy --from=builder /usr/bin/knot /usr/bin
 run mkdir /app && chown -R git:git /app
 
 healthcheck --interval=60s --timeout=30s --start-period=5s --retries=3 \
-  cmd curl -f http://localhost:5555 || exit 1
+    cmd curl -f http://localhost:5555 || exit 1
 
 entrypoint ["/init"]
-
