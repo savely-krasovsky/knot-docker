@@ -15,7 +15,7 @@ expose 22
 
 label org.opencontainers.image.title='knot'
 label org.opencontainers.image.description='data server for tangled'
-label org.opencontainers.image.source='https://tangled.sh/@tangled.sh/knot-docker'
+label org.opencontainers.image.source='https://github.com/savely-krasovsky/knot-docker'
 label org.opencontainers.image.url='https://tangled.sh'
 label org.opencontainers.image.vendor='tangled.sh'
 label org.opencontainers.image.licenses='MIT'
