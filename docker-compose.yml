@@ -3,7 +3,7 @@ services:
     build: .
     environment:
       KNOT_SERVER_HOSTNAME: ${KNOT_SERVER_HOSTNAME}
-      KNOT_SERVER_SECRET: ${KNOT_SERVER_SECRET}
+      KNOT_SERVER_OWNER: ${KNOT_SERVER_OWNER}
       KNOT_SERVER_DB_PATH: /app/knotserver.db
       KNOT_REPO_SCAN_PATH: /home/git/repositories
       KNOT_SERVER_INTERNAL_LISTEN_ADDR: localhost:5444
