@@ -1,6 +1,6 @@
 # Knot Docker
 
-> **IMPORTANT**  
+> **IMPORTANT**
 > This is a community maintained repository, support is not guaranteed.
 
 Docker container and compose setup to run a [Tangled](https://tangled.sh) knot
@@ -50,10 +50,9 @@ and run the following:
 
 ```sh
 export KNOT_SERVER_HOSTNAME=example.com
-export KNOT_SERVER_SECRET=KNOT_TOKEN_HERE
+export KNOT_SERVER_OWNER=did:plc:yourdidgoeshere
 export KNOT_SERVER_PORT=443
 docker compose up -d
 ```
 
 This will setup everything for you including a reverse proxy.
-
